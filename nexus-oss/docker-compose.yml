@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  nexus2:
+    image: sonatype/nexus:oss
+    container_name: nexus2-oss-server
+    restart: always
+    volumes:
+      - "nexus-data:/sonatype-work"
+      # - "/mnt/nexus/plugins:/opt/sonatype/nexus"
+    ports:
+      - "8082:8081"
+    networks:
+      - nexus_network
+  nexus3:
+    image: sonatype/nexus3:latest
+    container_name: nexus3-oss-server
+    restart: always
+    volumes:
+      - /mnt/nexus-data:/nexus-data
+      # - "/mnt/nexus/plugins:/opt/sonatype/nexus"
+    ports:
+      - "8083:8081"
+    networks:
+      - nexus_network
+volumes:
+  nexus-data: {}
+
+networks:
+  nexus_network:

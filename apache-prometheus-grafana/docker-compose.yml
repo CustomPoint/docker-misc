@@ -1,0 +1,62 @@
+version: "3.4"
+
+services:
+  prom-apache:
+    image: prom/apache
+    build:
+      context: apache
+    container_name: prom-apachec
+    ports:
+      - "8080:80"
+    networks:
+      - prom_network
+
+  prom-apache-exp:
+    image: prom/apache-exp
+    depends_on:
+      - prom-apache
+    build:
+      context: apache/exporter
+    container_name: prom-apache-expc
+    command: /go/bin/apache_exporter -scrape_uri "http://prom-apache:80/server-status/?auto"
+    ports:
+      - "9117:9117"
+    links:
+      - prom-apache:prom-apache
+    networks:
+      - prom_network
+
+  prom-server:
+    image: prom/prom-server
+    container_name: prom-serverc
+    build:
+      context: prom-server
+    links:
+      - prom-apache-exp
+    networks:
+      - prom_network
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: prom-grafanac
+    depends_on:
+      - prom-server
+    links:
+      - prom-server
+    ports:
+      - 3000:3000
+    networks:
+      - prom_network
+
+  portainer:
+    image: portainer/portainer
+    container_name: prom-portainer
+    ports:
+      - 9000:9000
+    networks:
+      - prom_network
+
+networks:
+  prom_network:

@@ -1,0 +1,52 @@
+# deploy/master/docker-compose.yml
+# Define the version of the compose file we're using
+version: '3.3'
+
+# Define our services
+services:
+  # Jenkins master's configuration
+  jenkins_master:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_master
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /home/jenkins/Jenkins:/var/jenkins_home
+    networks:
+      - jenkins_network
+
+  jenkins_portainer:
+    image: portainer/portainer
+    command: --no-auth -H unix:///var/run/docker.sock
+    restart: always
+    container_name: jenkins_portainer
+    ports:
+      - 9999:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/portainer:/data
+    networks:
+      - jenkins_network
+
+  poste.io_smtp:
+    image: analogic/poste.io:2.0.18
+    restart: always
+    container_name: poste.io_smtp
+    ports:
+      - "25:25"
+      - "80:80"
+      - "110:110"
+      - "143:143"
+      - "443:443"
+      - "587:587"
+      - "993:993"
+      - "995:995"
+    volumes:
+      - /home/jenkins/smtp_server:/data
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - jenkins_network
+networks:
+  jenkins_network:

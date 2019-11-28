@@ -1,0 +1,6 @@
+version: '2'
+
+services:
+ s3git:
+  build: .
+  image: s3git:latest

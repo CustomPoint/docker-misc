@@ -1,0 +1,24 @@
+version: 0.1
+log:
+    accesslog:
+        disabled: false
+    level: debug
+    formatter: text
+    fields:
+        service: registry
+http:
+    addr: :5000
+storage:
+    cache:
+        layerinfo: inmemory
+    s3:
+        accesskey: AKIAIOSFODNN7EXAMPLE
+        secretkey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+        region: us-east-1
+        regionendpoint: http://localhost:9000
+        bucket: docker-registry
+        encrypt: false
+        secure: false
+        v4auth: true
+        chunksize: 5242880
+        rootdirectory: /

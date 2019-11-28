@@ -1,0 +1,6 @@
+version: '2'
+#Reference: https://www.thepolyglotdeveloper.com/2017/03/nginx-reverse-proxy-containerized-docker-applications/
+services:
+  nginx:
+     image: nginx:alpine
+     restart: always

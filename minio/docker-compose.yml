@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  minio-server:
+    image: minio/minio:latest
+    container_name: minio-server
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9999:9000
+    networks:
+      - minio_distributed
+    environment:
+      MINIO_ACCESS_KEY: AKIAIOSFODNN7EXAMPLE
+      MINIO_SECRET_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    command: server /data
+    restart: always
+
+  minio-docker-reg:
+    image: minio-docker-reg:latest
+    container_name: minio-docker-registry
+    restart: always
+    build:
+        context: ./docker-registry
+        args:
+          - MINIO_URL=192.168.0.2
+    depends_on:
+      - minio-server
+    ports:
+      - 5000:5000
+    networks:
+      - minio_distributed
+    volumes:
+      - /path/data:/var/lib/registry
+      - /path/certs:/certs
+      - /path/auth:/auth
+
+  portainer:
+    image: portainer/portainer
+    command: --no-auth -H unix:///var/run/docker.sock
+    restart: always
+    container_name: minio-portainer
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/portainer:/data
+    networks:
+      - minio_distributed
+
+volumes:
+  minio-data:
+
+networks:
+  minio_distributed:
